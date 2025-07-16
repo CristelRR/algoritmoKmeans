@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
-import { generarSetNumerico } from "../services/apiService";
+import { generarSetNumerico, descargarArchivo } from "../services/apiService";
 import GraficaPersonalidad from "./GraficaPersonalidad";
 
 function UploadForm({ setResultados }) {
@@ -22,6 +22,8 @@ function UploadForm({ setResultados }) {
   const [error, setError] = useState(null);
   const [vistaLimpia, setVistaLimpia] = useState(null);
   const [vistaNumerica, setVistaNumerica] = useState(null);
+  const [nombreLimpio, setNombreLimpio] = useState(null);
+  const [nombreNumerico, setNombreNumerico] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleFileChange = (e) => {
@@ -30,6 +32,8 @@ function UploadForm({ setResultados }) {
     setError(null);
     setVistaLimpia(null);
     setVistaNumerica(null);
+    setNombreLimpio(null);
+    setNombreNumerico(null);
   };
 
   const handleUpload = async () => {
@@ -43,10 +47,12 @@ function UploadForm({ setResultados }) {
       const { ok, data } = await generarSetNumerico(file);
       if (ok) {
         setMensaje("Archivo procesado correctamente");
-        setResultados(data); // si deseas compartir el resultado globalmente
+        setResultados(data);
         setVistaLimpia(data.preview_limpio);
         setVistaNumerica(data.preview_numerico);
-        setTabIndex(0); // ir a la primera pestaña automáticamente
+        setNombreLimpio(`limpio_${file.name}`);
+        setNombreNumerico(`numerico_${file.name}`);
+        setTabIndex(0);
       } else {
         setError(data.detail || "Error al procesar el archivo");
       }
@@ -161,7 +167,7 @@ function UploadForm({ setResultados }) {
         </Alert>
       )}
 
-      {/* Tabs con vistas */}
+      {/* Tabs y vista previa */}
       {vistaNumerica && (
         <Box sx={{ mt: 5 }}>
           <Tabs
@@ -184,6 +190,29 @@ function UploadForm({ setResultados }) {
                 📊 Gráfico de clasificación de personalidad
               </Typography>
               <GraficaPersonalidad datos={vistaNumerica} />
+            </Box>
+          )}
+
+          {(nombreLimpio || nombreNumerico) && (
+            <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2 }}>
+              {nombreLimpio && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => descargarArchivo(nombreLimpio)}
+                >
+                  Descargar Set Limpio
+                </Button>
+              )}
+              {nombreNumerico && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => descargarArchivo(nombreNumerico)}
+                >
+                  Descargar Set Numérico
+                </Button>
+              )}
             </Box>
           )}
         </Box>

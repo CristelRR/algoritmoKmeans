@@ -30,3 +30,13 @@ export const generarSetNumerico = async (file) => {
     return { ok: false, data: { detail: "Error de red o servidor." } };
   }
 };
+
+export const descargarArchivo = async (nombreArchivo) => {
+  const url = `http://localhost:8000/descargar-archivo/${nombreArchivo}`;
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", nombreArchivo);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};

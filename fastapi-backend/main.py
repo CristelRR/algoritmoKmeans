@@ -6,6 +6,7 @@ import os
 import unicodedata
 import numpy as np
 from mapeos.mapeos import mapeos  
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -185,3 +186,12 @@ def preguntas_categorizadas():
         })
 
     return resultado
+
+@app.get("/descargar-archivo/{nombre_archivo}")
+def descargar_archivo(nombre_archivo: str):
+    ruta_archivo = os.path.join(UPLOAD_DIR, nombre_archivo)
+    if not os.path.exists(ruta_archivo):
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+    return FileResponse(path=ruta_archivo, filename=nombre_archivo, media_type='application/octet-stream')
+
+
