@@ -24,6 +24,7 @@ function UploadForm({ setResultados }) {
   const [vistaNumerica, setVistaNumerica] = useState(null);
   const [nombreLimpio, setNombreLimpio] = useState(null);
   const [nombreNumerico, setNombreNumerico] = useState(null);
+  const [nombreCluster, setNombreCluster] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleFileChange = (e) => {
@@ -34,6 +35,7 @@ function UploadForm({ setResultados }) {
     setVistaNumerica(null);
     setNombreLimpio(null);
     setNombreNumerico(null);
+    setNombreCluster(null);
   };
 
   const handleUpload = async () => {
@@ -52,6 +54,7 @@ function UploadForm({ setResultados }) {
         setVistaNumerica(data.preview_numerico);
         setNombreLimpio(`limpio_${file.name}`);
         setNombreNumerico(`numerico_${file.name}`);
+        setNombreCluster(data.archivo_cluster);
         setTabIndex(0);
       } else {
         setError(data.detail || "Error al procesar el archivo");
@@ -146,7 +149,7 @@ function UploadForm({ setResultados }) {
             },
           }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : "SUBIR"}
+          {loading ? <CircularProgress size={24} color="inherit" /> : "PROCESAR CON KMEANS"}
         </Button>
       </Box>
 
@@ -167,7 +170,6 @@ function UploadForm({ setResultados }) {
         </Alert>
       )}
 
-      {/* Tabs y vista previa */}
       {vistaNumerica && (
         <Box sx={{ mt: 5 }}>
           <Tabs
@@ -193,8 +195,8 @@ function UploadForm({ setResultados }) {
             </Box>
           )}
 
-          {(nombreLimpio || nombreNumerico) && (
-            <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2 }}>
+          {(nombreLimpio || nombreNumerico || nombreCluster) && (
+            <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
               {nombreLimpio && (
                 <Button
                   variant="outlined"
@@ -211,6 +213,15 @@ function UploadForm({ setResultados }) {
                   onClick={() => descargarArchivo(nombreNumerico)}
                 >
                   Descargar Set Numérico
+                </Button>
+              )}
+              {nombreCluster && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => descargarArchivo(nombreCluster)}
+                >
+                  Descargar Resultados con Clúster
                 </Button>
               )}
             </Box>

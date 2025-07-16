@@ -1,19 +1,20 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import pandas as pd
 import shutil
-import os 
+import os
 import unicodedata
 import numpy as np
-from mapeos.mapeos import mapeos  
-from fastapi.responses import FileResponse
+from mapeos.mapeos import mapeos
+from utils.kmeans_utils import aplicar_kmeans
 
 app = FastAPI()
 
-# CORS para permitir conexión con React
+# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # puedes poner "http://localhost:3000" si lo prefieres más seguro
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,7 +23,6 @@ app.add_middleware(
 UPLOAD_DIR = "cleaned_data"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-
 def limpiar_texto(texto):
     texto = str(texto).strip().lower()
     texto = texto.replace("¿", "").replace("?", "").replace("¡", "").replace("!", "")
@@ -30,9 +30,6 @@ def limpiar_texto(texto):
     return texto
 
 def clasificar_personalidad(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Clasifica la personalidad en base a la columna 'Puntaje Total' en tres categorías.
-    """
     def determinar_clasificacion(puntaje):
         if puntaje <= 90:
             return 'Introvertido'
@@ -40,48 +37,38 @@ def clasificar_personalidad(df: pd.DataFrame) -> pd.DataFrame:
             return 'Ambivertido'
         else:
             return 'Extrovertido'
-
     df['Personalidad'] = df['Puntaje Total'].apply(determinar_clasificacion)
     return df
 
-
-# Convertir a mapeos con claves p1, p2, ...
 mapeos_numerados = {
     f"p{i+1}": {"pregunta": pregunta, "opciones": opciones}
     for i, (pregunta, opciones) in enumerate(mapeos.items())
 }
 
-
 @app.get("/mapeos")
 def obtener_mapeos():
     return mapeos_numerados
-
 
 @app.post("/limpiar-set")
 async def limpiar_set(file: UploadFile = File(...)):
     if not file.filename.endswith(('.csv', '.xlsx')):
         raise HTTPException(status_code=400, detail="Formato de archivo no válido")
-
+    
     file_path = os.path.join(UPLOAD_DIR, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     try:
-        # Leer archivo
-        if file.filename.endswith('.csv'):
-            df = pd.read_csv(file_path)
-        else:
-            df = pd.read_excel(file_path)
+        df = pd.read_csv(file_path) if file.filename.endswith('.csv') else pd.read_excel(file_path)
 
-        # 🧽 LIMPIEZA DE DATOS
-        df = df.dropna()
         df.columns = df.columns.str.strip()
+        df = df.dropna()
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
         df = df.applymap(lambda x: x.lower() if isinstance(x, str) else x)
 
-        # Guardar limpio
-        cleaned_path = os.path.join(UPLOAD_DIR, f"limpio_{file.filename}")
-        df.to_csv(cleaned_path, index=False)
+        nombre_sin_ext = os.path.splitext(file.filename)[0]
+        cleaned_path = os.path.join(UPLOAD_DIR, f"limpio_{nombre_sin_ext}.xlsx")
+        df.to_excel(cleaned_path, index=False, engine="openpyxl")
 
         return {
             "message": "Archivo limpiado correctamente",
@@ -93,7 +80,6 @@ async def limpiar_set(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
-
 @app.post("/generar-set-numerico")
 async def generar_set_numerico(file: UploadFile = File(...)):
     if not file.filename.endswith(('.csv', '.xlsx')):
@@ -104,23 +90,17 @@ async def generar_set_numerico(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     try:
-        # 1️⃣ Leer archivo original
-        if file.filename.endswith(".csv"):
-            df = pd.read_csv(file_path)
-        else:
-            df = pd.read_excel(file_path)
+        df = pd.read_csv(file_path) if file.filename.endswith('.csv') else pd.read_excel(file_path)
 
-        # 2️⃣ LIMPIEZA de datos
-        df = df.dropna()
         df.columns = df.columns.str.strip()
+        df = df.dropna()
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
         df = df.applymap(lambda x: x.lower() if isinstance(x, str) else x)
 
-        # ✅ GUARDAR archivo limpio
-        cleaned_path = os.path.join(UPLOAD_DIR, f"limpio_{file.filename}")
-        df.to_csv(cleaned_path, index=False)
+        nombre_sin_ext = os.path.splitext(file.filename)[0]
+        cleaned_path = os.path.join(UPLOAD_DIR, f"limpio_{nombre_sin_ext}.xlsx")
+        df.to_excel(cleaned_path, index=False, engine="openpyxl")
 
-        # 3️⃣ NUMERIFICACIÓN
         df_numerico = df.copy()
         df_numerico.columns = [limpiar_texto(col) for col in df_numerico.columns]
 
@@ -141,10 +121,43 @@ async def generar_set_numerico(file: UploadFile = File(...)):
         df_numerico["Puntaje Total"] = df_numerico[columnas_existentes].sum(axis=1)
 
         df_resultado = clasificar_personalidad(df_numerico)
+        df_resultado["Clasificacion"] = df_resultado["Personalidad"]
 
-        # ✅ GUARDAR archivo numerificado
-        numerico_path = os.path.join(UPLOAD_DIR, f"numerico_{file.filename}")
-        df_resultado.to_csv(numerico_path, index=False)
+        df_resultado = df_resultado.dropna()
+
+        df_resultado = aplicar_kmeans(
+            df_resultado,
+            columnas_a_excluir=[
+                "Puntaje Total", "Personalidad", "Clasificacion",
+                "marca temporal", "cual es tu nombre", "en que rango de edad te encuentras",
+                "cual es tu ocupacion actual", "cual es tu genero"
+            ]
+        )
+
+                # Calcular el promedio del Puntaje Total por cluster
+        promedios = df_resultado.groupby("Cluster")["Puntaje Total"].mean().sort_values()
+
+        # Crear mapeo de clusters basado en promedio del puntaje
+        # El más bajo → Introvertido, medio → Ambivertido, más alto → Extrovertido
+        orden_clusters = promedios.index.tolist()
+
+        mapeo_clusters = {
+            orden_clusters[0]: "Introvertido",
+            orden_clusters[1]: "Ambivertido",
+            orden_clusters[2]: "Extrovertido"
+        }
+
+        # Agregar la predicción al DataFrame
+        df_resultado["Prediccion_Personalidad"] = df_resultado["Cluster"].map(mapeo_clusters)
+
+        # Guardar los archivos resultantes
+        numerico_path = os.path.join(UPLOAD_DIR, f"numerico_{nombre_sin_ext}.xlsx")
+        cluster_path = os.path.join(UPLOAD_DIR, f"clusterizado_{nombre_sin_ext}.csv")
+        prediccion_path = os.path.join(UPLOAD_DIR, f"prediccion_{nombre_sin_ext}.xlsx")
+
+        df_resultado.to_excel(numerico_path, index=False, engine="openpyxl")
+        df_resultado.to_csv(cluster_path, index=False, encoding='utf-8-sig')
+        df_resultado.to_excel(prediccion_path, index=False, engine="openpyxl")
 
         return {
             "message": "Archivo procesado correctamente",
@@ -153,13 +166,15 @@ async def generar_set_numerico(file: UploadFile = File(...)):
             "preview_numerico": df_resultado.replace({pd.NA: None, np.nan: None}).to_dict(orient="records"),
             "columns_limpio": list(df.columns),
             "columns_numerico": list(df_resultado.columns),
+            "archivo_cluster": f"clusterizado_{nombre_sin_ext}.csv",
+            "archivo_numerico": f"numerico_{nombre_sin_ext}.xlsx",
+            "archivo_prediccion": f"prediccion_{nombre_sin_ext}.xlsx"
         }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar el set numérico: {str(e)}")
 
-
-@app.get("/preguntas-categorizadas") 
+@app.get("/preguntas-categorizadas")
 def preguntas_categorizadas():
     categorias = {
         "Comunicación Social": ["p1", "p7", "p10", "p12", "p19", "p23", "p24", "p34", "p35", "p38", "p40", "p43"],
@@ -170,7 +185,6 @@ def preguntas_categorizadas():
         "Estilo Cognitivo": ["p4", "p8", "p25"]
     }
 
-    # Asocia cada clave como 'p1', 'p2'... a su categoría
     p_to_categoria = {
         clave: categoria
         for categoria, claves in categorias.items()
@@ -193,5 +207,3 @@ def descargar_archivo(nombre_archivo: str):
     if not os.path.exists(ruta_archivo):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
     return FileResponse(path=ruta_archivo, filename=nombre_archivo, media_type='application/octet-stream')
-
-
