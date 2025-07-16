@@ -1,4 +1,3 @@
-// src/components/UploadForm.jsx
 import React, { useState } from "react";
 import {
   Box,
@@ -10,6 +9,7 @@ import {
   Alert,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { DataGrid } from "@mui/x-data-grid";
 import { limpiarSet } from "../services/apiService";
 
 function UploadForm({ setResultados }) {
@@ -17,11 +17,13 @@ function UploadForm({ setResultados }) {
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState(null);
   const [error, setError] = useState(null);
+  const [resultados, setVistaPrevia] = useState(null);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setMensaje(null);
     setError(null);
+    setVistaPrevia(null);
   };
 
   const handleUpload = async () => {
@@ -35,7 +37,8 @@ function UploadForm({ setResultados }) {
       const { ok, data } = await limpiarSet(file);
       if (ok) {
         setMensaje("Archivo limpiado correctamente");
-        setResultados(data);
+        setResultados(data);       // Datos limpios completos
+        setVistaPrevia(data);      // Solo vista previa para esta tabla
       } else {
         setError(data.detail || "Error al limpiar el archivo");
       }
@@ -51,7 +54,7 @@ function UploadForm({ setResultados }) {
     <Paper
       elevation={6}
       sx={{
-        maxWidth: 700,
+        maxWidth: 900,
         mx: "auto",
         my: 6,
         p: 5,
@@ -120,6 +123,27 @@ function UploadForm({ setResultados }) {
         <Alert severity="error" sx={{ mt: 2 }}>
           {error}
         </Alert>
+      )}
+
+      {mensaje && resultados?.preview?.length > 0 && (
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
+            Vista previa del dataset limpiado:
+          </Typography>
+          <Box sx={{ height: 400, width: "100%" }}>
+            <DataGrid
+              rows={resultados.preview.map((row, i) => ({ id: i, ...row }))}
+              columns={Object.keys(resultados.preview[0]).map((col) => ({
+                field: col,
+                headerName: col,
+                flex: 1,
+                minWidth: 150,
+              }))}
+              pageSize={5}
+              rowsPerPageOptions={[5, 10, 20]}
+            />
+          </Box>
+        </Box>
       )}
     </Paper>
   );
