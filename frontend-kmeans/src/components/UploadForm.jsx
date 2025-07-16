@@ -7,23 +7,29 @@ import {
   Paper,
   CircularProgress,
   Alert,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
-import { generarSetNumerico } from "../services/apiService"; // 👈 NUEVO
+import { generarSetNumerico } from "../services/apiService";
+import GraficaPersonalidad from "./GraficaPersonalidad";
 
 function UploadForm({ setResultados }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState(null);
   const [error, setError] = useState(null);
-  const [resultados, setVistaPrevia] = useState(null);
+  const [vistaLimpia, setVistaLimpia] = useState(null);
+  const [vistaNumerica, setVistaNumerica] = useState(null);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setMensaje(null);
     setError(null);
-    setVistaPrevia(null);
+    setVistaLimpia(null);
+    setVistaNumerica(null);
   };
 
   const handleUpload = async () => {
@@ -34,11 +40,13 @@ function UploadForm({ setResultados }) {
 
     setLoading(true);
     try {
-      const { ok, data } = await generarSetNumerico(file); // 👈 CAMBIO
+      const { ok, data } = await generarSetNumerico(file);
       if (ok) {
         setMensaje("Archivo procesado correctamente");
-        setResultados(data); // Datos completos para análisis
-        setVistaPrevia(data); // Solo vista previa para la tabla
+        setResultados(data); // si deseas compartir el resultado globalmente
+        setVistaLimpia(data.preview_limpio);
+        setVistaNumerica(data.preview_numerico);
+        setTabIndex(0); // ir a la primera pestaña automáticamente
       } else {
         setError(data.detail || "Error al procesar el archivo");
       }
@@ -48,6 +56,34 @@ function UploadForm({ setResultados }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
+
+  const renderTable = (titulo, rows) => {
+    if (!rows || rows.length === 0) return null;
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
+          {titulo}
+        </Typography>
+        <Box sx={{ height: 400, width: "100%" }}>
+          <DataGrid
+            rows={rows.map((row, i) => ({ id: i, ...row }))}
+            columns={Object.keys(rows[0]).map((col) => ({
+              field: col,
+              headerName: col.toUpperCase(),
+              flex: 1,
+              minWidth: 150,
+            }))}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+          />
+        </Box>
+      </Box>
+    );
   };
 
   return (
@@ -125,24 +161,31 @@ function UploadForm({ setResultados }) {
         </Alert>
       )}
 
-      {mensaje && resultados?.preview?.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
-            Vista previa del dataset con clasificación:
-          </Typography>
-          <Box sx={{ height: 400, width: "100%" }}>
-            <DataGrid
-              rows={resultados.preview.map((row, i) => ({ id: i, ...row }))}
-              columns={Object.keys(resultados.preview[0]).map((col) => ({
-                field: col,
-                headerName: col.toUpperCase(),
-                flex: 1,
-                minWidth: 150,
-              }))}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10, 20]}
-            />
-          </Box>
+      {/* Tabs con vistas */}
+      {vistaNumerica && (
+        <Box sx={{ mt: 5 }}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleTabChange}
+            textColor="primary"
+            indicatorColor="primary"
+            centered
+          >
+            <Tab label="Set Limpio" />
+            <Tab label="Set Numérico" />
+            <Tab label="Gráfica" />
+          </Tabs>
+
+          {tabIndex === 0 && renderTable("✅ Vista previa del set limpio:", vistaLimpia)}
+          {tabIndex === 1 && renderTable("📊 Vista previa del set numérico con clasificación:", vistaNumerica)}
+          {tabIndex === 2 && (
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 2 }}>
+                📊 Gráfico de clasificación de personalidad
+              </Typography>
+              <GraficaPersonalidad datos={vistaNumerica} />
+            </Box>
+          )}
         </Box>
       )}
     </Paper>

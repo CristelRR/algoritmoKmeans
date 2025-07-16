@@ -103,15 +103,23 @@ async def generar_set_numerico(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     try:
-        # Leer archivo
+        # 1️⃣ Leer archivo original
         if file.filename.endswith(".csv"):
             df = pd.read_csv(file_path)
         else:
             df = pd.read_excel(file_path)
 
+        # 2️⃣ LIMPIEZA de datos
         df = df.dropna()
         df.columns = df.columns.str.strip()
+        df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+        df = df.applymap(lambda x: x.lower() if isinstance(x, str) else x)
 
+        # ✅ GUARDAR archivo limpio
+        cleaned_path = os.path.join(UPLOAD_DIR, f"limpio_{file.filename}")
+        df.to_csv(cleaned_path, index=False)
+
+        # 3️⃣ NUMERIFICACIÓN
         df_numerico = df.copy()
         df_numerico.columns = [limpiar_texto(col) for col in df_numerico.columns]
 
@@ -133,22 +141,24 @@ async def generar_set_numerico(file: UploadFile = File(...)):
 
         df_resultado = clasificar_personalidad(df_numerico)
 
-        # ✅ Guardar archivo numérico generado con clasificación
+        # ✅ GUARDAR archivo numerificado
         numerico_path = os.path.join(UPLOAD_DIR, f"numerico_{file.filename}")
         df_resultado.to_csv(numerico_path, index=False)
 
         return {
-            "message": "Archivo numérico generado correctamente",
+            "message": "Archivo procesado correctamente",
             "rows": len(df_resultado),
-            "columns": list(df_resultado.columns),
-            "preview": df_resultado.replace({pd.NA: None, np.nan: None}).to_dict(orient="records")
+            "preview_limpio": df.replace({pd.NA: None, np.nan: None}).to_dict(orient="records"),
+            "preview_numerico": df_resultado.replace({pd.NA: None, np.nan: None}).to_dict(orient="records"),
+            "columns_limpio": list(df.columns),
+            "columns_numerico": list(df_resultado.columns),
         }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar el set numérico: {str(e)}")
 
 
-@app.get("/preguntas-categorizadas")
+@app.get("/preguntas-categorizadas") 
 def preguntas_categorizadas():
     categorias = {
         "Comunicación Social": ["p1", "p7", "p10", "p12", "p19", "p23", "p24", "p34", "p35", "p38", "p40", "p43"],
