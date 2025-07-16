@@ -16,7 +16,6 @@ import {
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import EditIcon from "@mui/icons-material/Edit";
 import BarChartIcon from "@mui/icons-material/BarChart";
-
 import UploadForm from "./components/UploadForm";
 import ManualInputForm from "./components/ManualInputForm";
 import ResultsViewer from "./components/ResultsViewer";

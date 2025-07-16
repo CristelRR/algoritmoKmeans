@@ -1,0 +1,568 @@
+[
+  {
+    "name": "cual_es_tu_nombre",
+    "label": "¿Cuál es tu nombre?",
+    "type": "text"
+  },
+  {
+    "name": "en_que_rango_de_edad_te_encuentras",
+    "label": "¿En qué rango de edad te encuentras?",
+    "type": "select",
+    "options": [
+      "18 a 24 años",
+      "25 a 34 años",
+      "45 a 54 años",
+      "Menos de 18 años"
+    ]
+  },
+  {
+    "name": "cual_es_tu_ocupacion_actual",
+    "label": "¿Cuál es tu ocupación actual?",
+    "type": "select",
+    "options": [
+      "Estudiante",
+      "Empleado(a)",
+      "Profesional independiente",
+      "Hogar / Cuidados",
+      "Docente",
+      "Desempleado(a)",
+      "Emprendedor(a)",
+      "Barbero/estudiante"
+    ]
+  },
+  {
+    "name": "cual_es_tu_genero",
+    "label": "¿Cuál es tu género?",
+    "type": "select",
+    "options": [
+      "Masculino",
+      "Femenino",
+      "No binario",
+      "Prefiero no decirlo"
+    ]
+  },
+  {
+    "name": "que_tan_comodo_te_sientes_al_iniciar_una_conversacion_con_alguien_que_no_conoces",
+    "label": "¿Qué tan cómodo te sientes al iniciar una conversación con alguien que no conoces?",
+    "type": "select",
+    "options": [
+      "Neutro",
+      "Incómodo",
+      "Cómodo",
+      "Muy incómodo",
+      "Muy cómodo"
+    ]
+  },
+  {
+    "name": "despues_de_pasar_varias_horas_conviviendo_con_otras_personas_como_te_sientes",
+    "label": "Después de pasar varias horas conviviendo con otras personas, ¿Cómo te sientes?",
+    "type": "select",
+    "options": [
+      "Cansado",
+      "Neutro",
+      "Energizado",
+      "Muy cansado",
+      "Muy energizado"
+    ]
+  },
+  {
+    "name": "en_tu_tiempo_libre_prefieres_hacer_algo_tranquilo_leer_ver_series_o_salir",
+    "label": "En tu tiempo libre, ¿prefieres hacer algo tranquilo (leer, ver series) o salir?",
+    "type": "select",
+    "options": [
+      "Siempre tranquilo",
+      "Depende",
+      "Usualmente salir",
+      "Usualmente tranquilo",
+      "Siempre salir"
+    ]
+  },
+  {
+    "name": "te_cuesta_mantenerte_concentrado_cuando_estas_solo_mucho_tiempo",
+    "label": "¿Te cuesta mantenerte concentrado cuando estás solo mucho tiempo?",
+    "type": "select",
+    "options": [
+      "Frecuentemente",
+      "A veces",
+      "Nunca",
+      "Rara vez",
+      "Siempre"
+    ]
+  },
+  {
+    "name": "te_incomodan_los_momentos_de_silencio_cuando_estas_con_alguien",
+    "label": "¿Te incomodan los momentos de silencio cuando estás con alguien?",
+    "type": "select",
+    "options": [
+      "No me incomoda",
+      "Neutro",
+      "Me incomoda un poco",
+      "Me incomoda mucho",
+      "Me gusta el silencio"
+    ]
+  },
+  {
+    "name": "disfrutas_que_las_personas_pongan_atencion_en_ti_en_reuniones_o_grupos",
+    "label": "¿Disfrutas que las personas pongan atención en ti en reuniones o grupos?",
+    "type": "select",
+    "options": [
+      "Mucho",
+      "Nada",
+      "A veces",
+      "Poco",
+      "Bastante"
+    ]
+  },
+  {
+    "name": "te_gustan_las_pequenas_charlas_sobre_clima_noticias_etc",
+    "label": "¿Te gustan las pequeñas charlas (sobre clima, noticias, etc.)?",
+    "type": "select",
+    "options": [
+      "A veces sí",
+      "Sí, me gustan",
+      "Neutro",
+      "Prefiero evitarlas",
+      "No me gustan"
+    ]
+  },
+  {
+    "name": "prefieres_tener_pocos_amigos_cercanos_o_muchos_conocidos",
+    "label": "¿Prefieres tener pocos amigos cercanos o muchos conocidos?",
+    "type": "select",
+    "options": [
+      "Equilibrado",
+      "Muy pocos",
+      "Pocos",
+      "Bastantes",
+      "Muchos"
+    ]
+  },
+  {
+    "name": "te_cuesta_hablar_de_tus_emociones_con_alguien_mas",
+    "label": "¿Te cuesta hablar de tus emociones con alguien más?",
+    "type": "select",
+    "options": [
+      "Mucho",
+      "Bastante",
+      "Regular",
+      "Poco",
+      "Nada"
+    ]
+  },
+  {
+    "name": "te_resulta_facil_integrarte_a_una_conversacion_grupal",
+    "label": "¿Te resulta fácil integrarte a una conversación grupal?",
+    "type": "select",
+    "options": [
+      "Muy fácil",
+      "Difícil",
+      "Neutro",
+      "Muy difícil",
+      "Fácil"
+    ]
+  },
+  {
+    "name": "despues_de_eventos_sociales_necesitas_descansar_a_solas",
+    "label": "¿Después de eventos sociales necesitas descansar a solas?",
+    "type": "select",
+    "options": [
+      "Siempre",
+      "A veces",
+      "Frecuentemente",
+      "Rara vez",
+      "Nunca"
+    ]
+  },
+  {
+    "name": "sueles_contar_anecdotas_tuyas_cuando_convives",
+    "label": "¿Sueles contar anécdotas tuyas cuando convives?",
+    "type": "select",
+    "options": [
+      "A veces",
+      "Bastante",
+      "Poco",
+      "Mucho",
+      "Nada"
+    ]
+  },
+  {
+    "name": "te_gustan_los_ambientes_activos_plazas_conciertos_etc",
+    "label": "¿Te gustan los ambientes activos (plazas, conciertos, etc.)?",
+    "type": "select",
+    "options": [
+      "Rara vez",
+      "A veces",
+      "Siempre",
+      "Frecuentemente",
+      "Nunca"
+    ]
+  },
+  {
+    "name": "prefieres_trabajar_o_estudiar_en_grupo",
+    "label": "¿Prefieres trabajar o estudiar en grupo?",
+    "type": "select",
+    "options": [
+      "Siempre en grupo",
+      "Depende",
+      "Usualmente en grupo",
+      "Nunca",
+      "Rara vez"
+    ]
+  },
+  {
+    "name": "evitas_hablar_en_publico_si_puedes_elegir",
+    "label": "¿Evitas hablar en público si puedes elegir?",
+    "type": "select",
+    "options": [
+      "Siempre",
+      "Casi siempre",
+      "A veces",
+      "Rara vez",
+      "Nunca"
+    ]
+  },
+  {
+    "name": "te_aburres_si_no_interactuas_con_alguien",
+    "label": "¿Te aburres si no interactúas con alguien?",
+    "type": "select",
+    "options": [
+      "Rara vez",
+      "A veces",
+      "Nunca",
+      "Frecuentemente",
+      "Siempre"
+    ]
+  },
+  {
+    "name": "prefieres_platicar_en_persona_o_por_redes_sociales",
+    "label": "¿Prefieres platicar en persona o por redes sociales?",
+    "type": "select",
+    "options": [
+      "Siempre redes",
+      "Usualmente en persona",
+      "Neutro",
+      "Usualmente redes",
+      "Siempre en persona"
+    ]
+  },
+  {
+    "name": "con_que_frecuencia_organizas_convivencias_o_reuniones",
+    "label": "¿Con qué frecuencia organizas convivencias o reuniones?",
+    "type": "select",
+    "options": [
+      "Casi siempre",
+      "Rara vez",
+      "A veces",
+      "Nunca",
+      "Siempre"
+    ]
+  },
+  {
+    "name": "en_las_conversaciones_hablas_o_escuchas_mas",
+    "label": "En las conversaciones, ¿hablas o escuchas más?",
+    "type": "select",
+    "options": [
+      "Siempre escucho",
+      "Usualmente escucho",
+      "Equilibrado",
+      "Usualmente hablo",
+      "Siempre hablo"
+    ]
+  },
+  {
+    "name": "que_tan_comodo_te_sientes_expresando_tus_emociones",
+    "label": "¿Qué tan cómodo te sientes expresando tus emociones?",
+    "type": "select",
+    "options": [
+      "Muy cómodo",
+      "Poco cómodo",
+      "Neutro",
+      "Bastante cómodo",
+      "Nada cómodo"
+    ]
+  },
+  {
+    "name": "necesitas_tiempo_a_solas_para_equilibrarte_despues_de_socializar",
+    "label": "¿Necesitas tiempo a solas para equilibrarte después de socializar?",
+    "type": "select",
+    "options": [
+      "Frecuentemente",
+      "A veces",
+      "Siempre",
+      "Rara vez",
+      "Nunca"
+    ]
+  },
+  {
+    "name": "disfrutas_conocer_personas_lugares_o_actividades_nuevas",
+    "label": "¿Disfrutas conocer personas, lugares o actividades nuevas?",
+    "type": "select",
+    "options": [
+      "Muchísimo",
+      "A veces",
+      "Mucho",
+      "Poco",
+      "Nada"
+    ]
+  },
+  {
+    "name": "te_gusta_hablar_de_ti_con_otras_personas",
+    "label": "¿Te gusta hablar de ti con otras personas?",
+    "type": "select",
+    "options": [
+      "Mucho",
+      "A veces",
+      "Poco",
+      "Nada",
+      "Bastante"
+    ]
+  },
+  {
+    "name": "piensas_antes_de_hablar_o_hablas_sin_filtro",
+    "label": "¿Piensas antes de hablar o hablas sin filtro?",
+    "type": "select",
+    "options": [
+      "Hablo sin filtro",
+      "Usualmente pienso antes",
+      "Depende",
+      "Siempre pienso antes",
+      "Hablo rápido"
+    ]
+  },
+  {
+    "name": "te_incomodan_lugares_muy_concurridos",
+    "label": "¿Te incomodan lugares muy concurridos?",
+    "type": "select",
+    "options": [
+      "Siempre",
+      "Frecuentemente",
+      "A veces",
+      "Nada",
+      "Rara vez"
+    ]
+  },
+  {
+    "name": "te_sientes_bien_al_recibir_elogios_publicos",
+    "label": "¿Te sientes bien al recibir elogios públicos?",
+    "type": "select",
+    "options": [
+      "A veces",
+      "Mucho",
+      "Poco",
+      "Bastante",
+      "Nada"
+    ]
+  },
+  {
+    "name": "necesitas_convivir_con_alguien_para_sentirte_bien_durante_el_dia",
+    "label": "¿Necesitas convivir con alguien para sentirte bien durante el día?",
+    "type": "select",
+    "options": [
+      "Bastante",
+      "Nada",
+      "A veces",
+      "Poco",
+      "Mucho"
+    ]
+  },
+  {
+    "name": "te_cansan_los_estimulos_como_ruido_o_luces_fuertes",
+    "label": "¿Te cansan los estímulos como ruido o luces fuertes?",
+    "type": "select",
+    "options": [
+      "Mucha"
+    ]
+  },
+  {
+    "name": "necesitas_silencio_para_ordenar_tus_ideas",
+    "label": "¿Necesitas silencio para ordenar tus ideas?",
+    "type": "select",
+    "options": [
+      "Frecuentemente"
+    ]
+  },
+  {
+    "name": "te_sientes_con_confianza_al_hablar_en_presentaciones_o_networking",
+    "label": "¿Te sientes con confianza al hablar en presentaciones o networking?",
+    "type": "select",
+    "options": [
+      "Muy cómodo",
+      "Neutro",
+      "Muy incómodo",
+      "Cómodo",
+      "Incómodo"
+    ]
+  },
+  {
+    "name": "como_te_sientes_en_videollamadas_grupales_zoom_meet",
+    "label": "¿Cómo te sientes en videollamadas grupales (Zoom, Meet)?",
+    "type": "select",
+    "options": [
+      "Muy cómodo"
+    ]
+  },
+  {
+    "name": "con_que_frecuencia_usas_redes_para_interactuar_con_otros",
+    "label": "¿Con qué frecuencia usas redes para interactuar con otros?",
+    "type": "select",
+    "options": [
+      "Muy seguido",
+      "Frecuentemente",
+      "A veces",
+      "Rara vez",
+      "Casi nunca"
+    ]
+  },
+  {
+    "name": "disfrutas_dinamicas_en_grupo_como_juegos_o_debates",
+    "label": "¿Disfrutas dinámicas en grupo como juegos o debates?",
+    "type": "select",
+    "options": [
+      "Mucho",
+      "A veces",
+      "Bastante",
+      "Poco",
+      "Nada"
+    ]
+  },
+  {
+    "name": "te_cuesta_expresar_desacuerdo_en_grupo",
+    "label": "¿Te cuesta expresar desacuerdo en grupo?",
+    "type": "select",
+    "options": [
+      "Bastante",
+      "A veces",
+      "Nada",
+      "Poco",
+      "Mucho"
+    ]
+  },
+  {
+    "name": "te_gusta_que_te_hagan_preguntas_personales",
+    "label": "¿Te gusta que te hagan preguntas personales?",
+    "type": "select",
+    "options": [
+      "Depende",
+      "Poco",
+      "Bastante",
+      "Nada",
+      "Mucho"
+    ]
+  },
+  {
+    "name": "te_molesta_que_interrumpan_tu_tiempo_a_solas_para_platicar",
+    "label": "¿Te molesta que interrumpan tu tiempo a solas para platicar?",
+    "type": "select",
+    "options": [
+      "Rara vez"
+    ]
+  },
+  {
+    "name": "prefieres_hacer_cosas_nuevas_acompanado_o_solo",
+    "label": "¿Prefieres hacer cosas nuevas acompañado o solo?",
+    "type": "select",
+    "options": [
+      "Depende",
+      "Usualmente acompañado",
+      "Usualmente solo",
+      "Siempre acompañado",
+      "Siempre solo"
+    ]
+  },
+  {
+    "name": "te_cuesta_hablar_en_un_grupo_donde_no_conoces_a_nadie",
+    "label": "¿Te cuesta hablar en un grupo donde no conoces a nadie?",
+    "type": "select",
+    "options": [
+      "Un poco",
+      "Bastante",
+      "Nada",
+      "Mucho",
+      "Poco"
+    ]
+  },
+  {
+    "name": "te_gusta_participar_en_actividades_escolares_laborales_o_sociales",
+    "label": "¿Te gusta participar en actividades escolares, laborales o sociales?",
+    "type": "select",
+    "options": [
+      "Bastante",
+      "A veces",
+      "Poco",
+      "Mucho",
+      "Nada"
+    ]
+  },
+  {
+    "name": "te_sientes_comodo_hablando_de_tus_logros",
+    "label": "¿Te sientes cómodo hablando de tus logros?",
+    "type": "select",
+    "options": [
+      "Poco cómodo",
+      "Muy cómodo",
+      "Neutro",
+      "Nada cómodo",
+      "Cómodo"
+    ]
+  },
+  {
+    "name": "con_que_frecuencia_tomas_la_iniciativa_para_conocer_personas_nuevas",
+    "label": "¿Con qué frecuencia tomas la iniciativa para conocer personas nuevas?",
+    "type": "select",
+    "options": [
+      "Frecuentemente",
+      "Rara vez",
+      "A veces",
+      "Siempre",
+      "Nunca"
+    ]
+  },
+  {
+    "name": "prefieres_trabajar_en_silencio_o_en_lugares_sociales",
+    "label": "¿Prefieres trabajar en silencio o en lugares sociales?",
+    "type": "select",
+    "options": [
+      "Siempre silencio",
+      "Usualmente silencio",
+      "Neutro",
+      "Usualmente social",
+      "Siempre social"
+    ]
+  },
+  {
+    "name": "compartes_tus_ideas_en_clases_reuniones_o_trabajo",
+    "label": "¿Compartes tus ideas en clases, reuniones o trabajo?",
+    "type": "select",
+    "options": [
+      "Nunca",
+      "A veces",
+      "Frecuentemente",
+      "Rara vez",
+      "Siempre"
+    ]
+  },
+  {
+    "name": "que_tan_comodo_te_sientes_en_reuniones_por_videollamada",
+    "label": "¿Qué tan cómodo te sientes en reuniones por videollamada?",
+    "type": "select",
+    "options": [
+      "Cómodo",
+      "Incómodo",
+      "Neutro",
+      "Muy incómodo",
+      "Muy cómodo"
+    ]
+  },
+  {
+    "name": "te_gusta_estar_en_grupos_grandes_de_whatsapp_o_redes",
+    "label": "¿Te gusta estar en grupos grandes de WhatsApp o redes?",
+    "type": "select",
+    "options": [
+      "Mucho",
+      "Poco",
+      "A veces",
+      "Nada",
+      "Bastante"
+    ]
+  }
+]
