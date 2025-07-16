@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import shutil
 import os 
-from unidecode import unidecode
+import unicodedata
+import numpy as np
 
 app = FastAPI()
 
@@ -21,8 +22,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 def limpiar_texto(texto):
-    if isinstance(texto, str):
-        return unidecode(texto.strip().lower().replace('\n', ' '))
+    texto = str(texto).strip().lower()
+    texto = texto.replace("¿", "").replace("?", "").replace("¡", "").replace("!", "")
+    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("utf-8")
     return texto
 
 # Diccionario de mapeos personalizados por pregunta
@@ -130,7 +132,7 @@ mapeos = {
     "Mucho": 1, "Bastante": 2, "A veces": 3, "Poco": 4, "Nada": 5
   },
   "¿Te gusta que te hagan preguntas personales?": {
-    "Nada": 1, "Poco": 2, "Dependes": 3, "Bastante": 4, "Mucho": 5
+    "Nada": 1, "Poco": 2, "Depende": 3, "Bastante": 4, "Mucho": 5
   },
   "¿Te molesta que interrumpan tu tiempo a solas para platicar?": {
     "Siempre": 1, "Frecuentemente": 2, "A veces": 3, "Rara vez": 4, "Nunca": 5
@@ -200,6 +202,7 @@ async def limpiar_set(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
+
 @app.post("/generar-set-numerico")
 async def generar_set_numerico(file: UploadFile = File(...)):
     if not file.filename.endswith(('.csv', '.xlsx')):
@@ -219,30 +222,30 @@ async def generar_set_numerico(file: UploadFile = File(...)):
         df = df.dropna()
         df.columns = df.columns.str.strip()
 
-        # Normaliza columnas
+        # Copia y normaliza nombres de columnas
         df_numerico = df.copy()
-        df_numerico.columns = [limpiar_texto(col).replace('\n', ' ').replace('  ', ' ') for col in df_numerico.columns]
+        df_numerico.columns = [limpiar_texto(col) for col in df_numerico.columns]
 
-        # Normaliza mapeos
+        # Normaliza preguntas y opciones del diccionario
         mapeos_normalizados = {
-            limpiar_texto(k).replace('\n', ' ').replace('  ', ' '): {
-                limpiar_texto(res).replace('\n', ' ').replace('  ', ' '): val
-                for res, val in v.items()
+            limpiar_texto(pregunta): {
+                limpiar_texto(resp): val for resp, val in opciones.items()
             }
-            for k, v in mapeos.items()
+            for pregunta, opciones in mapeos.items()
         }
 
-
-        # Aplica mapeo
+        # Aplica los mapeos
         for pregunta_norm, opciones in mapeos_normalizados.items():
             if pregunta_norm in df_numerico.columns:
-                df_numerico[pregunta_norm] = df_numerico[pregunta_norm].map(lambda x: opciones.get(x, None))
+                df_numerico[pregunta_norm] = df_numerico[pregunta_norm].map(
+                    lambda x: opciones.get(limpiar_texto(x), None)
+                )
 
-        # Calcular puntaje total
+        # Calcula el puntaje sumando solo las columnas mapeadas correctamente
         columnas_existentes = [col for col in mapeos_normalizados if col in df_numerico.columns]
         df_numerico["Puntaje Total"] = df_numerico[columnas_existentes].sum(axis=1)
 
-        # Guardar el nuevo dataset
+        # Guarda el archivo generado
         numerico_path = os.path.join(UPLOAD_DIR, f"numerico_{file.filename}")
         df_numerico.to_csv(numerico_path, index=False)
 
@@ -250,7 +253,7 @@ async def generar_set_numerico(file: UploadFile = File(...)):
             "message": "Archivo numérico generado correctamente",
             "rows": len(df_numerico),
             "columns": list(df_numerico.columns),
-            "preview": df_numerico.head(3).to_dict(orient="records")
+            "preview": df_numerico.head(3).replace({pd.NA: None, np.nan: None}).to_dict(orient="records")
         }
 
     except Exception as e:
