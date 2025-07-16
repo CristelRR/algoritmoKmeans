@@ -1,7 +1,18 @@
 import pandas as pd
 from sklearn.cluster import KMeans
+import joblib
+import os
+from datetime import datetime
 
-def aplicar_kmeans(df: pd.DataFrame, columnas_a_excluir: list = None, n_clusters: int = 3) -> pd.DataFrame:
+def guardar_modelo(modelo, nombre="kmeans_model"):
+    """Guarda el modelo en una carpeta llamada 'modelos' con marca de tiempo."""
+    fecha = datetime.now().strftime("%Y%m%d_%H%M%S")
+    os.makedirs("modelos", exist_ok=True)
+    ruta = os.path.join("modelos", f"{nombre}_{fecha}.joblib")
+    joblib.dump(modelo, ruta)
+    return ruta
+
+def aplicar_kmeans(df: pd.DataFrame, columnas_a_excluir: list = None, n_clusters: int = 3):
     if columnas_a_excluir is None:
         columnas_a_excluir = []
 
@@ -19,7 +30,12 @@ def aplicar_kmeans(df: pd.DataFrame, columnas_a_excluir: list = None, n_clusters
     modelo = KMeans(n_clusters=n_clusters, random_state=42)
     df_filtrado["Cluster"] = modelo.fit_predict(df_filtrado[columnas_utiles])
 
-    # Combinar resultados con DataFrame original (opcional: también puedes usar solo el filtrado)
+    # Guardar modelo entrenado
+    ruta_modelo = guardar_modelo(modelo)
+    print(f"✅ Modelo guardado en: {ruta_modelo}")
+
+    # Combinar resultados con DataFrame original
     df.loc[df_filtrado.index, "Cluster"] = df_filtrado["Cluster"]
 
-    return df
+    # ⬅️ ¡Retorna también la ruta del modelo!
+    return df, ruta_modelo

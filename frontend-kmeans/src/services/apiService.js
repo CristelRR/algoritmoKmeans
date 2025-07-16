@@ -40,3 +40,15 @@ export const descargarArchivo = async (nombreArchivo) => {
   link.click();
   link.remove();
 };
+
+
+export async function obtenerModelos() {
+  try {
+    const response = await fetch("http://localhost:8000/modelos");
+    const data = await response.json();
+    return { ok: true, data };
+  } catch (error) {
+    console.error("Error al obtener modelos:", error);
+    return { ok: false, error };
+  }
+}

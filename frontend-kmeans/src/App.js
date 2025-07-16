@@ -15,11 +15,13 @@ import {
 
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import EditIcon from "@mui/icons-material/Edit";
+import FolderIcon from "@mui/icons-material/Folder";
 
 import UploadForm from "./components/UploadForm";
 import ManualInputForm from "./components/ManualInputForm";
 import ResultsViewer from "./components/ResultsViewer";
 import ChartsViewer from "./components/ChartsViewer";
+import ModelosGuardados from "./components/ModelosGuardados";
 
 const drawerWidth = 240;
 
@@ -40,6 +42,8 @@ function App() {
             <ChartsViewer resultados={resultados} />
           </>
         );
+      case "modelos":
+        return <ModelosGuardados />; // ✅ Agregado para mostrar la vista de modelos
       default:
         return null;
     }
@@ -71,7 +75,7 @@ function App() {
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
             boxSizing: "border-box",
-            backgroundColor: "#E0E7FF", // azul muy claro
+            backgroundColor: "#E0E7FF",
             color: "#1E3A8A",
             borderRight: "1px solid #CBD5E1",
             pt: 2,
@@ -91,6 +95,12 @@ function App() {
               <EditIcon sx={{ color: "#1E3A8A" }} />
             </ListItemIcon>
             <ListItemText primary="Ingreso Manual" />
+          </ListItem>
+          <ListItem button onClick={() => setSelectedSection("modelos")}>
+            <ListItemIcon>
+              <FolderIcon sx={{ color: "#1E3A8A" }} />
+            </ListItemIcon>
+            <ListItemText primary="Modelos Guardados" />
           </ListItem>
         </List>
       </Drawer>

@@ -8,6 +8,8 @@ import unicodedata
 import numpy as np
 from mapeos.mapeos import mapeos
 from utils.kmeans_utils import aplicar_kmeans
+from fastapi.responses import JSONResponse
+
 
 app = FastAPI()
 
@@ -125,7 +127,7 @@ async def generar_set_numerico(file: UploadFile = File(...)):
 
         df_resultado = df_resultado.dropna()
 
-        df_resultado = aplicar_kmeans(
+        df_resultado, ruta_modelo = aplicar_kmeans(
             df_resultado,
             columnas_a_excluir=[
                 "Puntaje Total", "Personalidad", "Clasificacion",
@@ -133,6 +135,7 @@ async def generar_set_numerico(file: UploadFile = File(...)):
                 "cual es tu ocupacion actual", "cual es tu genero"
             ]
         )
+
 
                 # Calcular el promedio del Puntaje Total por cluster
         promedios = df_resultado.groupby("Cluster")["Puntaje Total"].mean().sort_values()
@@ -168,7 +171,8 @@ async def generar_set_numerico(file: UploadFile = File(...)):
             "columns_numerico": list(df_resultado.columns),
             "archivo_cluster": f"clusterizado_{nombre_sin_ext}.csv",
             "archivo_numerico": f"numerico_{nombre_sin_ext}.xlsx",
-            "archivo_prediccion": f"prediccion_{nombre_sin_ext}.xlsx"
+            "archivo_prediccion": f"prediccion_{nombre_sin_ext}.xlsx",
+            "modelo_guardado": ruta_modelo    # Aquí podrías devolver la ruta
         }
 
     except Exception as e:
@@ -207,3 +211,17 @@ def descargar_archivo(nombre_archivo: str):
     if not os.path.exists(ruta_archivo):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
     return FileResponse(path=ruta_archivo, filename=nombre_archivo, media_type='application/octet-stream')
+
+@app.get("/modelos")
+def listar_modelos():
+    modelos_dir = "modelos"
+    if not os.path.exists(modelos_dir):
+        return JSONResponse(content={"modelos": []})
+
+    archivos = [
+        archivo for archivo in os.listdir(modelos_dir)
+        if archivo.endswith(".joblib")
+    ]
+    archivos.sort(reverse=True)  # Opcional: más recientes primero
+    return {"modelos": archivos}
+
