@@ -9,6 +9,9 @@ import numpy as np
 from mapeos.mapeos import mapeos
 from utils.kmeans_utils import aplicar_kmeans
 from fastapi.responses import JSONResponse
+from sklearn.base import BaseEstimator
+import joblib  
+from sklearn.cluster import KMeans  
 
 
 app = FastAPI()
@@ -224,4 +227,25 @@ def listar_modelos():
     ]
     archivos.sort(reverse=True)  # Opcional: más recientes primero
     return {"modelos": archivos}
+
+@app.get("/modelo-info/{nombre_modelo}")
+def obtener_info_modelo(nombre_modelo: str):
+    ruta = os.path.join("modelos", nombre_modelo)
+    
+    if not os.path.exists(ruta):
+        raise HTTPException(status_code=404, detail="Modelo no encontrado")
+
+    try:
+        modelo: BaseEstimator = joblib.load(ruta)
+
+        if not isinstance(modelo, KMeans):
+            raise HTTPException(status_code=400, detail="El archivo no es un modelo KMeans")
+
+        return {
+            "n_clusters": modelo.n_clusters,
+            "inertia": modelo.inertia_,
+            "centros": modelo.cluster_centers_.tolist()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al cargar el modelo: {str(e)}")
 

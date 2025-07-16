@@ -52,3 +52,14 @@ export async function obtenerModelos() {
     return { ok: false, error };
   }
 }
+
+export async function obtenerInfoModelo(nombre) {
+  try {
+    const response = await fetch(`http://localhost:8000/modelo-info/${nombre}`);
+    const data = await response.json();
+    return { ok: response.ok, data };
+  } catch (error) {
+    return { ok: false, data: null };
+  }
+}
+
