@@ -28,6 +28,21 @@ def limpiar_texto(texto):
     texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("utf-8")
     return texto
 
+def clasificar_personalidad(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Clasifica la personalidad en base a la columna 'Puntaje Total' en tres categorías.
+    """
+    def determinar_clasificacion(puntaje):
+        if puntaje <= 90:
+            return 'Introvertido'
+        elif puntaje <= 135:
+            return 'Ambivertido'
+        else:
+            return 'Extrovertido'
+
+    df['Personalidad'] = df['Puntaje Total'].apply(determinar_clasificacion)
+    return df
+
 
 # Convertir a mapeos con claves p1, p2, ...
 mapeos_numerados = {
@@ -97,11 +112,9 @@ async def generar_set_numerico(file: UploadFile = File(...)):
         df = df.dropna()
         df.columns = df.columns.str.strip()
 
-        # Copia y normaliza nombres de columnas
         df_numerico = df.copy()
         df_numerico.columns = [limpiar_texto(col) for col in df_numerico.columns]
 
-        # Normaliza preguntas y opciones del diccionario
         mapeos_normalizados = {
             limpiar_texto(pregunta): {
                 limpiar_texto(resp): val for resp, val in opciones.items()
@@ -109,26 +122,26 @@ async def generar_set_numerico(file: UploadFile = File(...)):
             for pregunta, opciones in mapeos.items()
         }
 
-        # Aplica los mapeos
         for pregunta_norm, opciones in mapeos_normalizados.items():
             if pregunta_norm in df_numerico.columns:
                 df_numerico[pregunta_norm] = df_numerico[pregunta_norm].map(
                     lambda x: opciones.get(limpiar_texto(x), None)
                 )
 
-        # Calcula el puntaje sumando solo las columnas mapeadas correctamente
         columnas_existentes = [col for col in mapeos_normalizados if col in df_numerico.columns]
         df_numerico["Puntaje Total"] = df_numerico[columnas_existentes].sum(axis=1)
 
-        # Guarda el archivo generado
+        df_resultado = clasificar_personalidad(df_numerico)
+
+        # ✅ Guardar archivo numérico generado con clasificación
         numerico_path = os.path.join(UPLOAD_DIR, f"numerico_{file.filename}")
-        df_numerico.to_csv(numerico_path, index=False)
+        df_resultado.to_csv(numerico_path, index=False)
 
         return {
             "message": "Archivo numérico generado correctamente",
-            "rows": len(df_numerico),
-            "columns": list(df_numerico.columns),
-            "preview": df_numerico.head(3).replace({pd.NA: None, np.nan: None}).to_dict(orient="records")
+            "rows": len(df_resultado),
+            "columns": list(df_resultado.columns),
+            "preview": df_resultado.replace({pd.NA: None, np.nan: None}).to_dict(orient="records")
         }
 
     except Exception as e:

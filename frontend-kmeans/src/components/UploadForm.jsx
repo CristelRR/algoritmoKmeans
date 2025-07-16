@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
-import { limpiarSet } from "../services/apiService";
+import { generarSetNumerico } from "../services/apiService"; // 👈 NUEVO
 
 function UploadForm({ setResultados }) {
   const [file, setFile] = useState(null);
@@ -34,13 +34,13 @@ function UploadForm({ setResultados }) {
 
     setLoading(true);
     try {
-      const { ok, data } = await limpiarSet(file);
+      const { ok, data } = await generarSetNumerico(file); // 👈 CAMBIO
       if (ok) {
-        setMensaje("Archivo limpiado correctamente");
-        setResultados(data);       // Datos limpios completos
-        setVistaPrevia(data);      // Solo vista previa para esta tabla
+        setMensaje("Archivo procesado correctamente");
+        setResultados(data); // Datos completos para análisis
+        setVistaPrevia(data); // Solo vista previa para la tabla
       } else {
-        setError(data.detail || "Error al limpiar el archivo");
+        setError(data.detail || "Error al procesar el archivo");
       }
     } catch (error) {
       console.error(error);
@@ -128,14 +128,14 @@ function UploadForm({ setResultados }) {
       {mensaje && resultados?.preview?.length > 0 && (
         <Box sx={{ mt: 4 }}>
           <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
-            Vista previa del dataset limpiado:
+            Vista previa del dataset con clasificación:
           </Typography>
           <Box sx={{ height: 400, width: "100%" }}>
             <DataGrid
               rows={resultados.preview.map((row, i) => ({ id: i, ...row }))}
               columns={Object.keys(resultados.preview[0]).map((col) => ({
                 field: col,
-                headerName: col,
+                headerName: col.toUpperCase(),
                 flex: 1,
                 minWidth: 150,
               }))}
