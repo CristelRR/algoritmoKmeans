@@ -1,0 +1,121 @@
+:root {
+    --intro-color: #b6fcd5;
+    --extro-color: #ffb347;
+    --neutral-bg: #f1f5ff;
+    --card-bg: rgba(255,255,255,0.92);
+    --main-blue: #a1c4fd;
+    --main-pink: #ffb3c6;
+    --main-yellow: #ffd166;
+    --main-green: #b9fbc0;
+    --header-dark: #21305b;
+  }
+  
+  body {
+    min-height: 100vh;
+    background: linear-gradient(120deg, var(--neutral-bg) 0%, #c6e2ff 100%);
+    overflow-x: hidden;
+    position: relative;
+    font-family: 'Quicksand', 'Orbitron', 'Montserrat', 'Poppins', sans-serif;
+  }
+  
+  .galaxy-bg { /* vacío, puedes quitarlo si ya no la usas */ }
+  
+  .glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px) saturate(1.1);
+    border-radius: 20px;
+    border: 1.5px solid rgba(40,80,180,0.09);
+    box-shadow: 0 8px 32px 0 rgba(131, 139, 191, 0.16);
+    color: #252f44;
+    overflow: hidden;
+    transition: box-shadow .25s;
+  }
+  
+  .glass-card:hover {
+    box-shadow: 0 12px 38px 0 rgba(131, 139, 191, 0.25);
+  }
+  
+  .neon-btn {
+    background: linear-gradient(90deg, var(--main-blue) 0%, var(--main-pink) 100%);
+    color: #fff;
+    box-shadow: 0 0 8px #a1c4fd, 0 0 24px #ffb3c6;
+    border-radius: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+  }
+  
+  .neon-btn:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 24px #a1c4fd, 0 0 48px #ffb3c6;
+  }
+  
+  /* Etiquetas visuales según personalidad */
+  .chip-intro {
+    background: var(--intro-color);
+    color: #226861;
+    font-weight: 700;
+    border-radius: 1em;
+    padding: 2px 14px;
+    margin-right: 7px;
+  }
+  .chip-extro {
+    background: var(--extro-color);
+    color: #835406;
+    font-weight: 700;
+    border-radius: 1em;
+    padding: 2px 14px;
+    margin-right: 7px;
+  }
+  
+  /* Encabezado y tablas */
+  .main-header {
+    color: var(--header-dark);
+    text-shadow: 0 4px 32px #dbeafe60;
+    font-family: 'Orbitron', 'Montserrat', 'Poppins', sans-serif;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+  }
+  
+  /* Tabla de modelos (ejemplo, puedes afinar según tu lib MUI o html) */
+  .model-table th {
+    color: #ffae42;
+    background: #fafbff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #ffe156;
+  }
+  .model-table td {
+    background: transparent;
+    color: #24304a;
+    font-family: "Menlo", monospace;
+  }
+  
+  /* Responsive ajustes para tablas largas */
+  @media (max-width: 950px) {
+    .model-table,
+    .model-table thead,
+    .model-table tbody,
+    .model-table th,
+    .model-table td,
+    .model-table tr {
+      display: block;
+    }
+    .model-table td {
+      min-width: 200px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  }
+  
+  /* Si quieres un gradiente aún más claro (tipo test moderno) */
+  body {
+    background: linear-gradient(120deg, #f8fcff 0%, #d4f1ff 100%);
+  }
+  
+  /* Puedes ajustar tarjetas específicas según resultado de personalidad */
+  .glass-card.introvertido { border-left: 7px solid var(--intro-color); }
+  .glass-card.extrovertido { border-left: 7px solid var(--extro-color); }
+  

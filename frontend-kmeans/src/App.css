@@ -1,12 +1,64 @@
-/* src/App.css */
+/* Fondo de cielo azul muy claro */
+.galaxy-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: linear-gradient(to bottom, #a7e9fc 0%, #f8fcff 100%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Si quieres aún más claro, puedes probar: */
+/*
+.galaxy-bg {
+  background: linear-gradient(to bottom, #d9f3ff 0%, #fafdff 100%);
+}
+*/
+
 .App {
   text-align: center;
   margin-top: 40px;
-}
-input {
-  margin: 10px;
-}
-button {
-  padding: 8px 16px;
+  position: relative;
+  z-index: 1;
 }
 
+input {
+  margin: 10px;
+  z-index: 1;
+  position: relative;
+}
+
+button {
+  padding: 8px 16px;
+  z-index: 1;
+  position: relative;
+}
+
+/* Tarjeta tipo glass moderna */
+.glass-card {
+  background: rgba(255,255,255,0.93);
+  backdrop-filter: blur(10px) saturate(1.07);
+  border-radius: 18px;
+  border: 1.5px solid rgba(40,80,180,0.09);
+  box-shadow: 0 8px 32px 0 rgba(131, 139, 191, 0.12);
+  color: #22315b;
+  overflow: hidden;
+}
+
+/* Botón gradiente atractivo */
+.neon-btn {
+  background: linear-gradient(90deg, #a1c4fd 0%, #ffb3c6 100%);
+  color: #fff;
+  border-radius: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  box-shadow: 0 0 8px #a1c4fd, 0 0 24px #ffb3c6;
+}
+.neon-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 24px #a1c4fd, 0 0 48px #ffb3c6;
+}

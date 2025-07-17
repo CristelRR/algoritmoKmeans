@@ -13,7 +13,6 @@ export const limpiarSet = async (file) => {
   return { ok: res.ok, data };
 };
 
-
 export const generarSetNumerico = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -23,7 +22,6 @@ export const generarSetNumerico = async (file) => {
       method: "POST",
       body: formData,
     });
-
     const data = await response.json();
     return { ok: response.ok, data };
   } catch (error) {
@@ -40,7 +38,6 @@ export const descargarArchivo = async (nombreArchivo) => {
   link.click();
   link.remove();
 };
-
 
 export async function obtenerModelos() {
   try {
@@ -59,7 +56,7 @@ export async function obtenerInfoModelo(nombre) {
     const data = await response.json();
     return { ok: response.ok, data };
   } catch (error) {
+    console.error("Error al obtener info del modelo:", error);
     return { ok: false, data: null };
   }
 }
-

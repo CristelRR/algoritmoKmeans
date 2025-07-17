@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@mui/x-data-grid": "^8.8.0",
+    "chart.js": "^4.5.0",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
+    "react-chartjs-2": "^5.3.0",
+    "recharts": "^3.1.0"
+  }
+}
