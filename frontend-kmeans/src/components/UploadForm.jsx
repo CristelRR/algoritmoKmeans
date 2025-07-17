@@ -1,7 +1,15 @@
-// src/components/UploadForm.jsx
-
 import React, { useState } from "react";
-import { Box, Typography, Button, Input, Paper, CircularProgress, Alert, Tabs, Tab } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Input,
+  Paper,
+  CircularProgress,
+  Alert,
+  Tabs,
+  Tab,
+} from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
 import { generarSetNumerico, descargarArchivo } from "../services/apiService";
@@ -43,6 +51,9 @@ function UploadForm({ setResultados }) {
     }
 
     setLoading(true);
+    setError(null);
+    setMensaje(null);
+
     try {
       const { ok, data } = await generarSetNumerico(file, variablesSeleccionadas);
 
@@ -56,11 +67,32 @@ function UploadForm({ setResultados }) {
         setNombreCluster(data.archivo_cluster);
         setTabIndex(0);
       } else {
-        setError(data.detail || "Error al procesar el archivo");
+        const detalle = data?.detail;
+        if (typeof detalle === "object" && detalle.error && detalle.detalles) {
+          const mensajeFormateado = `${detalle.error}:\n${detalle.detalles.join("\n")}`;
+          setError(mensajeFormateado);
+        } else if (typeof detalle === "string") {
+          setError(detalle);
+        } else {
+          setError("Error al procesar el archivo.");
+        }
       }
     } catch (error) {
       console.error(error);
-      setError("No se pudo conectar con el servidor");
+
+      const detalle =
+        error?.response?.data?.detail ||
+        error?.response?.data ||
+        error?.message;
+
+      if (typeof detalle === "object" && detalle.error && detalle.detalles) {
+        const mensajeFormateado = `${detalle.error}:\n${detalle.detalles.join("\n")}`;
+        setError(mensajeFormateado);
+      } else if (typeof detalle === "string") {
+        setError(detalle);
+      } else {
+        setError("Ocurrió un error inesperado.");
+      }
     } finally {
       setLoading(false);
     }
@@ -115,7 +147,6 @@ function UploadForm({ setResultados }) {
         📂 Adjuntar Set de Datos (Introvertido/Extrovertido)
       </Typography>
 
-      {/* AQUI VA VariableSelector */}
       <VariableSelector onSeleccionChange={handleSeleccionVariables} />
 
       <Box display="flex" alignItems="center" gap={2}>
@@ -151,7 +182,11 @@ function UploadForm({ setResultados }) {
             },
           }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : "PROCESAR CON KMEANS"}
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "PROCESAR CON KMEANS"
+          )}
         </Button>
       </Box>
 
@@ -162,7 +197,12 @@ function UploadForm({ setResultados }) {
       )}
 
       {mensaje && <Alert severity="success" sx={{ mt: 2 }}>{mensaje}</Alert>}
-      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+
+      {error && (
+        <Alert severity="error" sx={{ mt: 2, whiteSpace: 'pre-line' }}>
+          {error}
+        </Alert>
+      )}
 
       {vistaNumerica && (
         <Box sx={{ mt: 5 }}>
@@ -178,8 +218,10 @@ function UploadForm({ setResultados }) {
             <Tab label="Gráfica" />
           </Tabs>
 
-          {tabIndex === 0 && renderTable("✅ Vista previa del set limpio:", vistaLimpia)}
-          {tabIndex === 1 && renderTable("📊 Vista previa del set numérico con clasificación:", vistaNumerica)}
+          {tabIndex === 0 &&
+            renderTable("✅ Vista previa del set limpio:", vistaLimpia)}
+          {tabIndex === 1 &&
+            renderTable("📊 Vista previa del set numérico con clasificación:", vistaNumerica)}
           {tabIndex === 2 && (
             <Box sx={{ mt: 4 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -190,19 +232,39 @@ function UploadForm({ setResultados }) {
           )}
 
           {(nombreLimpio || nombreNumerico || nombreCluster) && (
-            <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                mt: 4,
+                display: "flex",
+                justifyContent: "center",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
               {nombreLimpio && (
-                <Button variant="outlined" color="primary" onClick={() => descargarArchivo(nombreLimpio)}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => descargarArchivo(nombreLimpio)}
+                >
                   Descargar Set Limpio
                 </Button>
               )}
               {nombreNumerico && (
-                <Button variant="outlined" color="secondary" onClick={() => descargarArchivo(nombreNumerico)}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => descargarArchivo(nombreNumerico)}
+                >
                   Descargar Set Numérico
                 </Button>
               )}
               {nombreCluster && (
-                <Button variant="contained" color="success" onClick={() => descargarArchivo(nombreCluster)}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => descargarArchivo(nombreCluster)}
+                >
                   Descargar Resultados con Clúster
                 </Button>
               )}

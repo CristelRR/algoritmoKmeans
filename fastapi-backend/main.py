@@ -52,12 +52,11 @@ mapeos_numerados = {
 @app.get("/preguntas-categorizadas")
 def preguntas_categorizadas():
     categorias = {
-        "Comunicación Social": ["p1", "p7", "p10", "p12", "p19", "p23", "p24", "p34", "p35", "p38", "p40", "p43"],
-        "Energía e Interacción Social": ["p2", "p11", "p16", "p21", "p26", "p27", "p41"],
-        "Preferencias de Actividades": ["p3", "p13", "p18", "p22", "p33", "p39", "p45"],
-        "Comodidad en Espacios Sociales": ["p6", "p14", "p15", "p17", "p30", "p31", "p32", "p36", "p37", "p42", "p44"],
-        "Expresión Emocional": ["p5", "p9", "p20", "p28", "p29"],
-        "Estilo Cognitivo": ["p4", "p8", "p25"]
+        "Sociabilidad": [ "p1", "p8", "p17", "p18", "p19", "p21", "p24", "p27", "p34", "p35", "p39", "p43" ],
+        "Asertividad / Liderazgo": [ "p7", "p10", "p14", "p20", "p23", "p28", "p29", "p30", "p31", "p38", "p41" ],
+        "Nivel de actividad": [ "p2", "p4", "p11", "p12", "p13", "p16", "p22", "p26", "p33", "p40", "p45" ],
+        "Búsqueda de emociones": [ "p3", "p6", "p15", "p25", "p32", "p36", "p37", "p42", "p44" ],
+        "Afecto positivo": [ "p5", "p9", "p20", "p29", "p30" ]
     }
 
     p_to_categoria = {
@@ -109,6 +108,34 @@ def obtener_info_modelo(nombre_modelo: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al cargar el modelo: {str(e)}")
 
+MINIMOS_POR_CATEGORIA = {
+    "Sociabilidad": 6,
+    "Asertividad / Liderazgo": 6,
+    "Nivel de actividad": 6,
+    "Búsqueda de emociones": 5,
+    "Afecto positivo": 3
+}
+
+CATEGORIAS = {
+    "Sociabilidad": [ "p1", "p8", "p17", "p18", "p19", "p21", "p24", "p27", "p34", "p35", "p39", "p43" ],
+    "Asertividad / Liderazgo": [ "p7", "p10", "p14", "p20", "p23", "p28", "p29", "p30", "p31", "p38", "p41" ],
+    "Nivel de actividad": [ "p2", "p4", "p11", "p12", "p13", "p16", "p22", "p26", "p33", "p40", "p45" ],
+    "Búsqueda de emociones": [ "p3", "p6", "p15", "p25", "p32", "p36", "p37", "p42", "p44" ],
+    "Afecto positivo": [ "p5", "p9", "p20", "p29", "p30" ]
+}
+
+def validar_preguntas_por_categoria(df_columnas):
+    errores = []
+    for categoria, preguntas in CATEGORIAS.items():
+        seleccionadas = [p for p in preguntas if p in df_columnas]
+        if len(seleccionadas) < MINIMOS_POR_CATEGORIA[categoria]:
+            errores.append(f"{categoria}: mínimo requerido es {MINIMOS_POR_CATEGORIA[categoria]}, seleccionadas: {len(seleccionadas)}")
+    return errores
+
+mapeos_numerados = {
+    f"p{i+1}": {"pregunta": pregunta, "opciones": opciones}
+    for i, (pregunta, opciones) in enumerate(mapeos.items())
+}
 
 @app.post("/generar-set-numerico")
 async def generar_set_numerico(
@@ -137,7 +164,6 @@ async def generar_set_numerico(
         df_numerico = df.copy()
         df_numerico.columns = [limpiar_texto(col) for col in df_numerico.columns]
 
-        # 🔁 Mapear encabezados completos a claves tipo p1, p2, etc.
         mapa_columnas = {
             limpiar_texto(contenido["pregunta"]): clave
             for clave, contenido in mapeos_numerados.items()
@@ -171,7 +197,21 @@ async def generar_set_numerico(
             if not columnas_existentes:
                 raise HTTPException(status_code=400, detail="No hay columnas válidas seleccionadas.")
 
+            errores_validacion = validar_preguntas_por_categoria(columnas_existentes)
+            if errores_validacion:
+                raise HTTPException(status_code=400, detail={
+                    "error": "No se cumplen los mínimos por categoría.",
+                    "detalles": errores_validacion
+                })
+
         df_filtrado = df_numerico[columnas_existentes].copy()
+
+        # ✅ Agregar puntajes por categoría (esto alimenta la gráfica radar)
+        for categoria, preguntas in CATEGORIAS.items():
+            columnas_categoria = [p for p in preguntas if p in df_filtrado.columns]
+            if columnas_categoria:
+                df_filtrado[categoria] = df_filtrado[columnas_categoria].sum(axis=1)
+
         df_filtrado["Puntaje Total"] = df_filtrado[columnas_existentes].sum(axis=1)
 
         total_original = df_filtrado.shape[0]
@@ -181,10 +221,7 @@ async def generar_set_numerico(
         total_final = df_resultado.shape[0]
         eliminados = total_original - total_final
 
-        columnas_excluir = [
-            "Puntaje Total", "Personalidad", "Clasificacion"
-        ]
-
+        columnas_excluir = ["Puntaje Total", "Personalidad", "Clasificacion"]
         if variables_usar:
             columnas_excluir += [col for col in df_resultado.columns if col.startswith("p") and col not in variables_usar]
 
