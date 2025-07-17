@@ -1,19 +1,12 @@
+// src/components/UploadForm.jsx
+
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Input,
-  Paper,
-  CircularProgress,
-  Alert,
-  Tabs,
-  Tab,
-} from "@mui/material";
+import { Box, Typography, Button, Input, Paper, CircularProgress, Alert, Tabs, Tab } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
 import { generarSetNumerico, descargarArchivo } from "../services/apiService";
 import GraficaPersonalidad from "./GraficaPersonalidad";
+import VariableSelector from "./VariableSelector";
 
 function UploadForm({ setResultados }) {
   const [file, setFile] = useState(null);
@@ -26,6 +19,7 @@ function UploadForm({ setResultados }) {
   const [nombreNumerico, setNombreNumerico] = useState(null);
   const [nombreCluster, setNombreCluster] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
+  const [variablesSeleccionadas, setVariablesSeleccionadas] = useState([]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -38,6 +32,10 @@ function UploadForm({ setResultados }) {
     setNombreCluster(null);
   };
 
+  const handleSeleccionVariables = (lista) => {
+    setVariablesSeleccionadas(lista);
+  };
+
   const handleUpload = async () => {
     if (!file) {
       setError("Selecciona un archivo");
@@ -46,7 +44,8 @@ function UploadForm({ setResultados }) {
 
     setLoading(true);
     try {
-      const { ok, data } = await generarSetNumerico(file);
+      const { ok, data } = await generarSetNumerico(file, variablesSeleccionadas);
+
       if (ok) {
         setMensaje("Archivo procesado correctamente");
         setResultados(data);
@@ -116,6 +115,9 @@ function UploadForm({ setResultados }) {
         📂 Adjuntar Set de Datos (Introvertido/Extrovertido)
       </Typography>
 
+      {/* AQUI VA VariableSelector */}
+      <VariableSelector onSeleccionChange={handleSeleccionVariables} />
+
       <Box display="flex" alignItems="center" gap={2}>
         <Input
           type="file"
@@ -159,16 +161,8 @@ function UploadForm({ setResultados }) {
         </Typography>
       )}
 
-      {mensaje && (
-        <Alert severity="success" sx={{ mt: 2 }}>
-          {mensaje}
-        </Alert>
-      )}
-      {error && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          {error}
-        </Alert>
-      )}
+      {mensaje && <Alert severity="success" sx={{ mt: 2 }}>{mensaje}</Alert>}
+      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
 
       {vistaNumerica && (
         <Box sx={{ mt: 5 }}>
@@ -198,29 +192,17 @@ function UploadForm({ setResultados }) {
           {(nombreLimpio || nombreNumerico || nombreCluster) && (
             <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
               {nombreLimpio && (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => descargarArchivo(nombreLimpio)}
-                >
+                <Button variant="outlined" color="primary" onClick={() => descargarArchivo(nombreLimpio)}>
                   Descargar Set Limpio
                 </Button>
               )}
               {nombreNumerico && (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => descargarArchivo(nombreNumerico)}
-                >
+                <Button variant="outlined" color="secondary" onClick={() => descargarArchivo(nombreNumerico)}>
                   Descargar Set Numérico
                 </Button>
               )}
               {nombreCluster && (
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={() => descargarArchivo(nombreCluster)}
-                >
+                <Button variant="contained" color="success" onClick={() => descargarArchivo(nombreCluster)}>
                   Descargar Resultados con Clúster
                 </Button>
               )}

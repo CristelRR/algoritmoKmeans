@@ -14,9 +14,12 @@ export const limpiarSet = async (file) => {
 };
 
 
-export const generarSetNumerico = async (file) => {
+export const generarSetNumerico = async (file, variables = []) => {
   const formData = new FormData();
   formData.append("file", file);
+
+  // Convertir variables a string JSON y adjuntar al formData
+  formData.append("variables", JSON.stringify(variables));
 
   try {
     const response = await fetch("http://localhost:8000/generar-set-numerico", {
@@ -30,6 +33,7 @@ export const generarSetNumerico = async (file) => {
     return { ok: false, data: { detail: "Error de red o servidor." } };
   }
 };
+
 
 export const descargarArchivo = async (nombreArchivo) => {
   const url = `http://localhost:8000/descargar-archivo/${nombreArchivo}`;
@@ -63,3 +67,13 @@ export async function obtenerInfoModelo(nombre) {
   }
 }
 
+export async function obtenerPreguntasCategorizadas() {
+  try {
+    const response = await fetch("http://localhost:8000/preguntas-categorizadas");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener preguntas categorizadas:", error);
+    return [];
+  }
+}

@@ -16,12 +16,15 @@ import {
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import EditIcon from "@mui/icons-material/Edit";
 import FolderIcon from "@mui/icons-material/Folder";
+import HomeIcon from "@mui/icons-material/Home";
 
 import UploadForm from "./components/UploadForm";
 import ManualInputForm from "./components/ManualInputForm";
 import ResultsViewer from "./components/ResultsViewer";
 import ChartsViewer from "./components/ChartsViewer";
 import ModelosGuardados from "./components/ModelosGuardados";
+import Home from "./components/Home";
+
 
 const drawerWidth = 240;
 
@@ -43,7 +46,10 @@ function App() {
           </>
         );
       case "modelos":
-        return <ModelosGuardados />; // ✅ Agregado para mostrar la vista de modelos
+        return <ModelosGuardados />;
+      case "home":
+  return <Home />;
+
       default:
         return null;
     }
@@ -84,6 +90,13 @@ function App() {
       >
         <Toolbar />
         <List>
+          <ListItem button onClick={() => setSelectedSection("home")}>
+  <ListItemIcon>
+    <HomeIcon sx={{ color: "#1E3A8A" }} />
+  </ListItemIcon>
+  <ListItemText primary="Inicio" />
+</ListItem>
+
           <ListItem button onClick={() => setSelectedSection("upload")}>
             <ListItemIcon>
               <UploadFileIcon sx={{ color: "#1E3A8A" }} />

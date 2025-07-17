@@ -5,10 +5,10 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#1E3A8A",  // Azul profundo elegante (AppBar, títulos)
+      main: "#020b22ff",  // Azul profundo elegante (AppBar, títulos)
     },
     secondary: {
-      main: "#2563EB",  // Azul intenso para botones activos
+      main: "#132e68ff",  // Azul intenso para botones activos
     },
     background: {
       default: "#F1F5F9", // Fondo gris azulado suave
