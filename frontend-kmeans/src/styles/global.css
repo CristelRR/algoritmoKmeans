@@ -1,33 +1,48 @@
-:root {
-    --intro-color: #b6fcd5;
-    --extro-color: #ffb347;
-    --neutral-bg: #f1f5ff;
-    --card-bg: rgba(255,255,255,0.92);
-    --main-blue: #a1c4fd;
-    --main-pink: #ffb3c6;
-    --main-yellow: #ffd166;
-    --main-green: #b9fbc0;
-    --header-dark: #21305b;
+/* global.css */
+
+/* ——————————————————————————————————————————————————————————————
+   Variables globales
+   —————————————————————————————————————————————————————————————— */
+   :root {
+    --intro-color:   #b6fcd5;
+    --extro-color:   #ffb347;
+    --neutral-bg:    #f1f5ff;
+    --card-bg:       rgba(255,255,255,0.92);
+    --main-blue:     #a1c4fd;
+    --main-pink:     #ffb3c6;
+    --main-yellow:   #ffd166;
+    --main-green:    #b9fbc0;
+    --header-dark:   #21305b;
   }
   
+  /* ——————————————————————————————————————————————————————————————
+     Estilos del body
+     —————————————————————————————————————————————————————————————— */
   body {
     min-height: 100vh;
-    background: linear-gradient(120deg, var(--neutral-bg) 0%, #c6e2ff 100%);
+    background: linear-gradient(120deg, #f8fcff 0%, #d4f1ff 100%);
+    /* que NO recorte nada a nivel de página */
     overflow-x: hidden;
     position: relative;
-    font-family: 'Quicksand', 'Orbitron', 'Montserrat', 'Poppins', sans-serif;
+    font-family: 'Quicksand', 'Orbitron', 'Montserrat', 'Poppins', sans‑serif;
+    margin: 0;
+    padding: 0;
   }
   
-  .galaxy-bg { /* vacío, puedes quitarlo si ya no la usas */ }
-  
+  /* ——————————————————————————————————————————————————————————————
+     Glass-card: tarjetas con fondo translúcido
+     —————————————————————————————————————————————————————————————— */
   .glass-card {
     background: var(--card-bg);
     backdrop-filter: blur(8px) saturate(1.1);
     border-radius: 20px;
-    border: 1.5px solid rgba(40,80,180,0.09);
+    border: 1.5px solid rgba(40, 80, 180, 0.09);
     box-shadow: 0 8px 32px 0 rgba(131, 139, 191, 0.16);
     color: #252f44;
-    overflow: hidden;
+    /* Que la tarjeta no se amplíe horizontalmente */
+    overflow-x: auto;
+    /* Permitimos contenido interno vertical si hiciera falta */
+    overflow-y: visible;
     transition: box-shadow .25s;
   }
   
@@ -35,6 +50,9 @@
     box-shadow: 0 12px 38px 0 rgba(131, 139, 191, 0.25);
   }
   
+  /* ——————————————————————————————————————————————————————————————
+     Botones neón
+     —————————————————————————————————————————————————————————————— */
   .neon-btn {
     background: linear-gradient(90deg, var(--main-blue) 0%, var(--main-pink) 100%);
     color: #fff;
@@ -42,7 +60,7 @@
     border-radius: 30px;
     font-weight: 700;
     letter-spacing: 1px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform .2s, box-shadow .2s;
     border: none;
   }
   
@@ -51,7 +69,9 @@
     box-shadow: 0 0 24px #a1c4fd, 0 0 48px #ffb3c6;
   }
   
-  /* Etiquetas visuales según personalidad */
+  /* ——————————————————————————————————————————————————————————————
+     Chips de personalidad
+     —————————————————————————————————————————————————————————————— */
   .chip-intro {
     background: var(--intro-color);
     color: #226861;
@@ -69,16 +89,20 @@
     margin-right: 7px;
   }
   
-  /* Encabezado y tablas */
+  /* ——————————————————————————————————————————————————————————————
+     Encabezados y tipografía general
+     —————————————————————————————————————————————————————————————— */
   .main-header {
     color: var(--header-dark);
     text-shadow: 0 4px 32px #dbeafe60;
-    font-family: 'Orbitron', 'Montserrat', 'Poppins', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', 'Poppins', sans‑serif;
     font-weight: 800;
     letter-spacing: 2.5px;
   }
   
-  /* Tabla de modelos (ejemplo, puedes afinar según tu lib MUI o html) */
+  /* ——————————————————————————————————————————————————————————————
+     Tabla de modelos (ejemplo)
+     —————————————————————————————————————————————————————————————— */
   .model-table th {
     color: #ffae42;
     background: #fafbff;
@@ -93,7 +117,9 @@
     font-family: "Menlo", monospace;
   }
   
-  /* Responsive ajustes para tablas largas */
+  /* ——————————————————————————————————————————————————————————————
+     Ajustes responsive para tablas largas
+     —————————————————————————————————————————————————————————————— */
   @media (max-width: 950px) {
     .model-table,
     .model-table thead,
@@ -110,12 +136,13 @@
     }
   }
   
-  /* Si quieres un gradiente aún más claro (tipo test moderno) */
-  body {
-    background: linear-gradient(120deg, #f8fcff 0%, #d4f1ff 100%);
+  /* ——————————————————————————————————————————————————————————————
+     Bordes coloreados según personalidad (opcional)
+     —————————————————————————————————————————————————————————————— */
+  .glass-card.introvertido {
+    border-left: 7px solid var(--intro-color);
   }
-  
-  /* Puedes ajustar tarjetas específicas según resultado de personalidad */
-  .glass-card.introvertido { border-left: 7px solid var(--intro-color); }
-  .glass-card.extrovertido { border-left: 7px solid var(--extro-color); }
+  .glass-card.extrovertido {
+    border-left: 7px solid var(--extro-color);
+  }
   

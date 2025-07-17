@@ -16,12 +16,14 @@ import {
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import EditIcon from "@mui/icons-material/Edit";
 import FolderIcon from "@mui/icons-material/Folder";
+import HomeIcon from "@mui/icons-material/Home";
 
 import UploadForm from "./components/UploadForm";
 import ManualInputForm from "./components/ManualInputForm";
 import ResultsViewer from "./components/ResultsViewer";
 import ChartsViewer from "./components/ChartsViewer";
 import ModelosGuardados from "./components/ModelosGuardados";
+import Home from "./components/Home";
 
 const drawerWidth = 230;
 
@@ -35,7 +37,11 @@ function App() {
         return (
           <Box className="glass-card"
             sx={{
-              width: "100%", maxWidth: 750, mx: "auto", p: { xs: 2, md: 4 }, mt: 3,
+              width: "100%",
+              maxWidth: 1280, // <--- Cambiado aquí
+              mx: "auto",
+              p: { xs: 2, md: 4 },
+              mt: 1,
               boxShadow: "0 4px 32px #a0e9fd44"
             }}>
             <UploadForm setResultados={setResultados} />
@@ -45,7 +51,11 @@ function App() {
         return (
           <Box className="glass-card"
             sx={{
-              width: "100%", maxWidth: 750, mx: "auto", p: { xs: 2, md: 4 }, mt: 3,
+              width: "100%",
+              maxWidth: 1280, // <--- Cambiado aquí
+              mx: "auto",
+              p: { xs: 2, md: 4 },
+              mt: 1,
               boxShadow: "0 4px 32px #f3bff833"
             }}>
             <ManualInputForm setResultados={setResultados} />
@@ -55,7 +65,11 @@ function App() {
         return (
           <Box className="glass-card"
             sx={{
-              width: "100%", maxWidth: 980, mx: "auto", p: { xs: 2, md: 4 }, mt: 3,
+              width: "100%",
+              maxWidth: 980,
+              mx: "auto",
+              p: { xs: 2, md: 4 },
+              mt: 1,
               boxShadow: "0 4px 32px #a0e9fd44"
             }}>
             <ResultsViewer resultados={resultados} />
@@ -63,8 +77,9 @@ function App() {
           </Box>
         );
       case "modelos":
-        // ModelosGuardados ya trae su propio fondo y glass, no lo encierres en otra card.
         return <ModelosGuardados />;
+      case "home":
+        return <Home />;
       default:
         return null;
     }
@@ -98,7 +113,7 @@ function App() {
           </Toolbar>
         </AppBar>
 
-        {/* Sidebar */}
+        {/* Sidebar: PROFESIONAL y azul claro */}
         <Drawer
           variant="permanent"
           sx={{
@@ -118,6 +133,21 @@ function App() {
         >
           <Toolbar />
           <List>
+            <ListItem
+              button
+              selected={selectedSection === "home"}
+              onClick={() => setSelectedSection("home")}
+              sx={{
+                borderRadius: 2,
+                my: 1,
+                background: selectedSection === "home" ? "rgba(130,200,255,0.14)" : "none",
+                "&.Mui-selected": { background: "rgba(130,200,255,0.22)" }
+              }}>
+              <ListItemIcon>
+                <HomeIcon sx={{ color: "#41b4ee" }} />
+              </ListItemIcon>
+              <ListItemText primary="Inicio" />
+            </ListItem>
             <ListItem
               button
               selected={selectedSection === "upload"}
@@ -172,8 +202,8 @@ function App() {
           sx={{
             flexGrow: 1,
             p: { xs: 2, sm: 3, md: 4 },
-            mt: 8,
-            minHeight: "100vh",
+            mt: { xs: 7, sm: 8 },  // Deja sólo el espacio necesario para el AppBar fijo (64px aprox)
+            minHeight: "calc(100vh - 64px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "flex-start",

@@ -13,9 +13,15 @@ export const limpiarSet = async (file) => {
   return { ok: res.ok, data };
 };
 
-export const generarSetNumerico = async (file) => {
+// Unificamos la función para soportar variables opcionales
+export const generarSetNumerico = async (file, variables = []) => {
   const formData = new FormData();
   formData.append("file", file);
+
+  // Si variables están presentes, adjuntarlas
+  if (variables && variables.length > 0) {
+    formData.append("variables", JSON.stringify(variables));
+  }
 
   try {
     const response = await fetch("http://localhost:8000/generar-set-numerico", {
@@ -57,6 +63,30 @@ export async function obtenerInfoModelo(nombre) {
     return { ok: response.ok, data };
   } catch (error) {
     console.error("Error al obtener info del modelo:", error);
+    return { ok: false, data: null };
+  }
+}
+
+// Agrega la función de preguntas categorizadas sin quitar las anteriores
+export async function obtenerPreguntasCategorizadas() {
+  try {
+    const response = await fetch("http://localhost:8000/preguntas-categorizadas");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener preguntas categorizadas:", error);
+    return [];
+  }
+}
+
+// Obtener datos numéricos de gráficas dinámicas
+export async function obtenerGraficasJSON(nombreArchivo) {
+  try {
+    const response = await fetch(`http://localhost:8000/graficas-json/${nombreArchivo}`);
+    const data = await response.json();
+    return { ok: response.ok, data };
+  } catch (error) {
+    console.error("Error al obtener datos de gráficas JSON:", error);
     return { ok: false, data: null };
   }
 }

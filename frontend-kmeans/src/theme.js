@@ -4,8 +4,12 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     mode: "light",
-    primary:   { main: "#58b4fa" },   // Azul pastel animado
-    secondary: { main: "#fd94b4" },   // Rosa pastel (energía y calidez)
+    primary: {
+      main: "#58b4fa",      // Azul pastel animado para botones y detalles
+    },
+    secondary: {
+      main: "#fd94b4",      // Rosa pastel (energía y calidez)
+    },
     background: {
       default: "#eaf7fe",    // Fondo principal MUY claro (azul cielo)
       paper: "rgba(255,255,255,0.96)", // Cards tipo glass
